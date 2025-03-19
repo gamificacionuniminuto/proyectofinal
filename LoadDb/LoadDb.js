@@ -1,0 +1,53 @@
+const axios = require ('axios');
+const { Product } = require('../db');
+//const {products} = require('../models/assets/products.json')
+
+async function LoadDb(req, res) {
+  try {
+    {
+      const prodApi = await axios.get('https://apimocha.com/gimasioapi/post');
+      const ProductModel = prodApi.data.map((e) => {
+        return {
+          //id: e.id,
+          title: e.title,
+          brand: e.brand,
+          description: e.description,
+          price: e.price,
+          discount: e.discount,
+          image: e.image,
+          status: e.status,
+          stock: e.stock,
+          genre: e.genre,
+          sport: e.sport,
+          size: e.size
+        };
+        console.log("hola")
+      });
+      ProductModel.forEach(async (e) => {
+        await Product.findOrCreate({
+          where: {
+           // id: e.id,
+            title: e.title,
+            brand: e.brand,
+            description: e.description,
+            price: e.price,
+            discount: e.discount,
+            image: e.image,
+            status: e.status,
+            stock: e.stock,
+            genre: e.genre,
+            sport: e.sport,
+            size: e.size
+          },
+        });
+      });
+    };
+    console.log('DB success')
+  } catch (error) {
+    res.send(error);
+  };
+};
+
+console.log("hola")
+
+module.exports= {LoadDb}
