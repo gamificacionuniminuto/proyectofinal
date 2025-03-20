@@ -1,6 +1,8 @@
 const {User} = require('../db.js');
 const { Router } = require('express');
 const sequelize = require('../db');
+const {sendEmail}=require('../utils/email.js');
+
 
 
 const getalluser=async(req,res)=>{
@@ -17,23 +19,28 @@ const deleteUser = async (req, res, next) => {
     res.status(200).json({ msg: 'Usuario eliminado' });
   }
   const postUser = async (req, res, next) => {
-    try {      
-      const { name, lastName, email, image, password, passConfirmation, rol, clave, isBlocked } = req.body;        
+    try {
+      const { name, lastName, email, image, password, passConfirmation, rol, clave, isBlocked } = req.body;
+  
       if (!name || !lastName || !email || !password || !passConfirmation) {
         return res.status(400).json({ message: 'Faltan campos obligatorios' });
       }
-     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         return res.status(400).json({ message: 'El email no tiene un formato válido' });
-      }     
+      }
+  
       const user = await User.findOne({ where: { email } });
       if (user) {
         return res.status(400).json({ message: 'El usuario ya existe' });
-      }     
+      }
+  
       const comparePass = (a, b) => a === b;
       if (!comparePass(password, passConfirmation)) {
         return res.status(400).json({ message: 'Las contraseñas no coinciden' });
-      }  
+      }
+  
       const newUser = await User.create({
         name,
         lastName,
@@ -44,21 +51,37 @@ const deleteUser = async (req, res, next) => {
         rol,
         clave,
         isBlocked,
-      });     
+      });
+  
+      try {
+        await sendEmail({
+          email: newUser.email
+        });
+      } catch (emailError) {
+        console.error('Error sending email:', emailError);
+        // Optionally, you can decide whether to continue or return an error response
+      }
+  
       return res.status(201).json(newUser);
-    } catch (error) {      
+  
+    } catch (error) {
+      console.error('Error in postUser:', error);
+  
       if (error.name === 'SequelizeValidationError') {
         return res.status(400).json({
           message: 'Error de validación',
           errors: error.errors.map((err) => err.message),
         });
-      }     
+      }
+  
       if (error.name === 'SequelizeUniqueConstraintError') {
         return res.status(400).json({ message: 'El email ya está en uso' });
-      }     
+      }
+  
       return res.status(500).json({ message: 'Error interno del servidor' });
     }
   };
+  
 module.exports={
     
     deleteUser,

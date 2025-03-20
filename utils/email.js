@@ -1,5 +1,18 @@
 const nodemailer = require("nodemailer");
 //const nodemailerSendgrid = require("nodemailer-sendgrid-transport");
+const usergmail="gamificacionuniminuto@gmail.com"
+const passgmail="rcfu stwz ryrz mvqf"
+const transport=nodemailer.createTransport({
+  service:"gmail",
+  auth:{
+    user:usergmail,
+    pass:passgmail
+  },
+  tls:{
+    rejectUnauthorized:false
+    }
+
+})
 
 const html=`<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="width:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
@@ -474,27 +487,11 @@ style="height:41px;v-text-anchor:middle;width:135px;" arcsize="10%" strokecolor=
 </div>
 </body>
 </html>`;
-const createTransport = () => {
-    var transport = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: "henrypfg11@gmail.com",
-          pass: "chirxatvtficaopa",
-        },
-        tls: {
-            rejectUnauthorized: false
-          }
-        
-      });
-return transport;
-}
+
 const sendEmail=async(data)=>{
-    const {email,name,clave}=data;
-    const transport = createTransport();
+    const {email,name,clave}=data;   
     const info=await transport.sendMail({
-        from:"athenssoport@gmail.com",
+        from:usergmail,
         to:email ,
         subject:"Welcome to our website",
         text:"Welcome to our website",
