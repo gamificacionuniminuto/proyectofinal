@@ -55,7 +55,8 @@ const deleteUser = async (req, res, next) => {
   
       try {
         await sendEmail({
-          email: newUser.email
+          email: newUser.email,
+          name:newUser.name
         });
       } catch (emailError) {
         console.error('Error sending email:', emailError);
