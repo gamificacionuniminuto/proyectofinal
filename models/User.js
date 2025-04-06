@@ -14,6 +14,10 @@ module.exports = (sequelize) => {
         primaryKey: true,
         autoIncrement: true,
       },
+      parent: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -23,6 +27,17 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: {
+            msg: 'El email no es válido',
+            args: true,
+          },
+        },
+      },
+      emailparent: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,

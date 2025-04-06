@@ -20,7 +20,7 @@ const deleteUser = async (req, res, next) => {
   }
   const postUser = async (req, res, next) => {
     try {
-      const { name, lastName, email, image, password, passConfirmation, rol, clave, isBlocked } = req.body;
+      const { name, lastName, email, image, password, passConfirmation, rol, clave, isBlocked,parent,emailparent } = req.body;
   
       if (!name || !lastName || !email || !password || !passConfirmation) {
         return res.status(400).json({ message: 'Faltan campos obligatorios' });
@@ -40,6 +40,7 @@ const deleteUser = async (req, res, next) => {
       if (!comparePass(password, passConfirmation)) {
         return res.status(400).json({ message: 'Las contraseñas no coinciden' });
       }
+      
   
       const newUser = await User.create({
         name,
@@ -51,11 +52,15 @@ const deleteUser = async (req, res, next) => {
         rol,
         clave,
         isBlocked,
+        parent,
+        emailparent
+
       });
   
       try {
         await sendEmail({
-          email: newUser.email
+          email: newUser.email,
+          name:newUser.name
         });
       } catch (emailError) {
         console.error('Error sending email:', emailError);

@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const fs = require('fs').promises;
 //const nodemailerSendgrid = require("nodemailer-sendgrid-transport");
 const usergmail="gamificacionuniminuto@gmail.com"
 const passgmail="rcfu stwz ryrz mvqf"
@@ -488,19 +489,31 @@ style="height:41px;v-text-anchor:middle;width:135px;" arcsize="10%" strokecolor=
 </body>
 </html>`;
 
-const sendEmail=async(data)=>{
-    const {email,name,clave}=data;   
-    const info=await transport.sendMail({
-        from:usergmail,
-        to:email ,
-        subject:"Welcome to our website",
-        text:"Welcome to our website",
-        html:html
-    });
-    console.log("Message sent: %s", info.messageId);
+const sendEmail = async (data) => {
+  const { email, name, clave } = data;
 
-     return
-}
+  try {
+      // Lee el archivo HTML
+      let html = await fs.readFile('utils/correo.html', 'utf8');
+      html = html.replace('{{name}}', name)
+
+      // Reemplaza las variables en el HTML
+     
+      // Envía el correo
+      const info = await transport.sendMail({
+          from: 'tu_correo@gmail.com', // Reemplaza con tu correo
+          to: email,
+          subject: "Welcome to our website",
+          text: "Welcome to our website", // Versión en texto plano
+          html: html, // Usa el contenido HTML cargado
+          
+      });
+
+      console.log('Correo enviado:', info.messageId);
+  } catch (error) {
+      console.error('Error al enviar el correo:', error);
+  }
+};
 
 const emailOlvidePassword=async(data)=>{
     
