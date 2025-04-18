@@ -492,20 +492,15 @@ style="height:41px;v-text-anchor:middle;width:135px;" arcsize="10%" strokecolor=
 const sendEmail = async (data) => {
   const { email, name, clave } = data;
 
-  try {
-      // Lee el archivo HTML
+  try {      
       let html = await fs.readFile('utils/correo.html', 'utf8');
-      html = html.replace('{{name}}', name)
-
-      // Reemplaza las variables en el HTML
-     
-      // Envía el correo
+      html = html.replace('{{name}}', name)      
       const info = await transport.sendMail({
-          from: 'tu_correo@gmail.com', // Reemplaza con tu correo
+          from: 'tu_correo@gmail.com', 
           to: email,
           subject: "Welcome to our website",
-          text: "Welcome to our website", // Versión en texto plano
-          html: html, // Usa el contenido HTML cargado
+          text: "Welcome to our website", 
+          html: html, 
           
       });
 

@@ -1,9 +1,10 @@
-const generarTokenID = () => {
-    const randomNum = Math.random().toString(32).substring(2);
-    const date = Date.now().toString(32);
-  
-    return randomNum + date;
-  };
-  
-  module.exports = generarTokenID;
-  
+const generarTokenID = () => {  
+  const caracteres = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';  
+  for (let i = 0; i < 5; i++) {
+    const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+    token += caracteres.charAt(indiceAleatorio);
+  }
+  return token;
+};
+module.exports = generarTokenID;

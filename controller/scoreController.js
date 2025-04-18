@@ -1,6 +1,6 @@
 const { Score } = require('../db.js');
 
-// Función interna para generar problemas (no necesita exportarse)
+
 const generateProblem = (difficulty) => {
   let a, b, answer;
   const randomRange = {
@@ -20,14 +20,11 @@ const generateProblem = (difficulty) => {
     difficulty
   };
 };
-
-// Controlador para obtener problemas
 const getProblem = (req, res) => {
   const { difficulty = 'easy' } = req.query;
   res.json(generateProblem(difficulty));
 };
 
-// Controlador para guardar puntajes
 const postScore = async (req, res) => {
     const { id, difficulty, isCorrect } = req.body;
   
@@ -85,8 +82,34 @@ const postScore = async (req, res) => {
       });
     }
   };
-
+  const getScore = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        
+        
+        if (!id) {
+            const error = new Error('No se ha especificado el ID del score');
+            error.status = 400;
+            throw error;
+        }      
+        const score = await Score.findByPk(id);        
+        if (!score) {
+            const error = new Error('Score no encontrado');
+            error.status = 404; 
+            throw error;
+        }   
+        res.status(200).json({
+        success: true,
+        data: score
+        });
+    } catch (error) {
+        // Pasar el error al middleware de manejo de errores
+        next(error);
+    }
+};
+  
 module.exports = {
   getProblem,
-  postScore
+  postScore,
+  getScore
 };

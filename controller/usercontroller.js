@@ -2,8 +2,8 @@ const {User} = require('../db.js');
 const { Router } = require('express');
 const sequelize = require('../db');
 const {sendEmail}=require('../utils/email.js');
-
-
+const generarTokenID=require('../utils/generarTokenUser.js');
+const { hashPassword } = require("../utils/hashPassword.js");
 
 const getalluser=async(req,res)=>{
     const user = await User.findAll();
@@ -63,8 +63,7 @@ const deleteUser = async (req, res, next) => {
           name:newUser.name
         });
       } catch (emailError) {
-        console.error('Error sending email:', emailError);
-        // Optionally, you can decide whether to continue or return an error response
+        console.error('Error sending email:', emailError);        
       }
   
       return res.status(201).json(newUser);
@@ -87,10 +86,74 @@ const deleteUser = async (req, res, next) => {
     }
   };
   
+const olvidePassword = async (req, res) => {
+  const { email } = req.body;
+  const mail = email;
+
+  const userExists = await User.findOne({
+    where: { email },
+  });
+
+  if (!userExists) {
+   
+    return res.status(400).json({ msg: `El usuario con el mail ${email} no existe` });
+  }
+
+  try {
+    userExists.clave = generarTokenID();
+    await userExists.save();
+
+    // emailOlvidePassword({
+    //   email: userExists.email,
+    //   name: userExists.nombre,
+    //   clave: userExists.clave,
+    //   id: userExists.id,
+    // });
+
+    return res.json({
+      msg: `Hemos enviado un email a ${userExists.mail} con las instrucciones`,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const newPassword = async (req, res) => {
+  const { clave, password, email } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ msg: "Contraseña solicitada no ingresada" });
+  }
+
+  if (!clave) {
+    return res.status(400).json({ msg: "Clave requerida para validar el cambio de contraseña" });
+  }
+
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ msg: "Usuario no encontrado" });
+    }   
+    if (user.clave !== clave) {
+      return res.status(400).json({ msg: "Clave incorrecta" });    }
+
+    user.password = await hashPassword(password);
+    user.clave = ""; 
+    await user.save();
+
+    return res.json({ msg: "Contraseña cambiada correctamente" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: "Error del servidor" });
+  }
+};
+  
 module.exports={
     
     deleteUser,
     postUser,
     getalluser,
+    olvidePassword,
+    newPassword
     
     }
