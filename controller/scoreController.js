@@ -1,6 +1,4 @@
 const { Score } = require('../db.js');
-
-
 const generateProblem = (difficulty) => {
   let a, b, answer;
   const randomRange = {
@@ -8,11 +6,9 @@ const generateProblem = (difficulty) => {
     medium: { min: 10, max: 50 },
     hard: { min: 50, max: 100 }
   };
-
   a = Math.floor(Math.random() * (randomRange[difficulty].max - randomRange[difficulty].min + 1)) + randomRange[difficulty].min;
   b = Math.floor(Math.random() * (randomRange[difficulty].max - randomRange[difficulty].min + 1)) + randomRange[difficulty].min;
   answer = a + b;
-
   return {
     question: `¿Cuánto es ${a} + ${b}?`,
     answer,
@@ -84,8 +80,7 @@ const postScore = async (req, res) => {
   };
   const getScore = async (req, res, next) => {
     try {
-        const { id } = req.params;
-        
+        const { id } = req.params; 
         
         if (!id) {
             const error = new Error('No se ha especificado el ID del score');
@@ -102,8 +97,7 @@ const postScore = async (req, res) => {
         success: true,
         data: score
         });
-    } catch (error) {
-        // Pasar el error al middleware de manejo de errores
+    } catch (error) {        
         next(error);
     }
 };

@@ -2,6 +2,7 @@ const {User} = require('../db.js');
 const { Router } = require('express');
 const sequelize = require('../db');
 const {sendEmail}=require('../utils/email.js');
+const {emailOlvidePassword}=require('../utils/email.js');
 const generarTokenID=require('../utils/generarTokenUser.js');
 const { hashPassword } = require("../utils/hashPassword.js");
 
@@ -103,15 +104,15 @@ const olvidePassword = async (req, res) => {
     userExists.clave = generarTokenID();
     await userExists.save();
 
-    // emailOlvidePassword({
-    //   email: userExists.email,
-    //   name: userExists.nombre,
-    //   clave: userExists.clave,
-    //   id: userExists.id,
-    // });
+    emailOlvidePassword({
+      email: userExists.email,
+      name: userExists.name,
+      clave: userExists.clave,
+      id: userExists.id,
+    });
 
     return res.json({
-      msg: `Hemos enviado un email a ${userExists.mail} con las instrucciones`,
+      msg: `Hemos enviado un email a ${userExists.email} con las instrucciones`,
     });
   } catch (error) {
     console.log(error);
