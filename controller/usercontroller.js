@@ -150,13 +150,13 @@ const newPassword = async (req, res) => {
 };
 const putUser = async (req, res, next) => {
   const { id } = req.params;
-  const { name, lastName, rol,isBlocked,image,emailparent } = req.body;
+  const { name, lastName, rol,isBlocked,image,emailparent,email } = req.body;
 
   
   try{
   await User.update({
   
-    rol,isBlocked,name,lastName,image,emailparent
+    rol,isBlocked,name,lastName,image,emailparent,email
 
   },{where:{id}});
   res.status(200).json({msg:'Usuario actualizado'});
