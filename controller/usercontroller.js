@@ -148,6 +148,22 @@ const newPassword = async (req, res) => {
     return res.status(500).json({ msg: "Error del servidor" });
   }
 };
+const putUser = async (req, res, next) => {
+  const { id } = req.params;
+  const { name, lastName, rol,isBlocked,image,emailparent } = req.body;
+
+  
+  try{
+  await User.update({
+  
+    rol,isBlocked,name,lastName,image,emailparent
+
+  },{where:{id}});
+  res.status(200).json({msg:'Usuario actualizado'});
+  }catch(error){
+      next(error);
+  }
+};
   
 module.exports={
     
@@ -155,6 +171,7 @@ module.exports={
     postUser,
     getalluser,
     olvidePassword,
-    newPassword
+    newPassword,
+    putUser
     
     }
