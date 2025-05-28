@@ -55,7 +55,6 @@ const deleteUser = async (req, res, next) => {
         isBlocked,
         parent,
         emailparent
-
       });
   
       try {
@@ -150,19 +149,55 @@ const newPassword = async (req, res) => {
 };
 const putUser = async (req, res, next) => {
   const { id } = req.params;
-  const { name, lastName, rol,isBlocked,image,emailparent,email } = req.body;
-
-  
+  const { name, lastName, rol,isBlocked,image,emailparent,email } = req.body;  
   try{
-  await User.update({
-  
+  await User.update({  
     rol,isBlocked,name,lastName,image,emailparent,email
-
   },{where:{id}});
   res.status(200).json({msg:'Usuario actualizado'});
   }catch(error){
       next(error);
   }
+};
+const updateUserScore = async (req, res, next) => {
+    const { id } = req.params;
+    const { numberToAdd } = req.body;   
+    if (numberToAdd === undefined || numberToAdd === null || isNaN(numberToAdd)) {
+        return res.status(400).json({ 
+            success: false,
+            msg: 'El número a sumar debe ser un valor numérico válido' 
+        });
+    }
+    try {        
+        const user = await User.findByPk(id);        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false,
+                msg: 'Usuario no encontrado' 
+            });
+        }        
+        const currentScore = Number(user.score) || 0;
+        const numberToAddValue = Number(numberToAdd);       
+        const newScore = currentScore + numberToAddValue;     
+        await user.update({ score: newScore });
+        return res.status(200).json({ 
+            success: true,
+            msg: 'Score actualizado correctamente',
+            data: {
+                userId: id,
+                numberAdded: numberToAddValue,
+                previousScore: currentScore,
+                newScore: newScore
+            }
+        });
+    } catch (error) {
+        console.error('Error updating user score:', error);
+        return res.status(500).json({ 
+            success: false,
+            msg: 'Error interno del servidor',
+            error: error.message 
+        });
+    }
 };
   
 module.exports={
@@ -172,6 +207,7 @@ module.exports={
     getalluser,
     olvidePassword,
     newPassword,
-    putUser
+    putUser,
+    updateUserScore
     
     }
