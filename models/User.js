@@ -68,6 +68,11 @@ module.exports = (sequelize) => {
         type: DataTypes.BOOLEAN,
         deaultValue: false,
       },
+      score:{
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          defaultValue:1
+        },
       clave: {
         type: DataTypes.STRING,
       },
